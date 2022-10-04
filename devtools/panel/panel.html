@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+	<style type="text/css">
+	table.gridtable {
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+        color:#333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+    }
+    table.gridtable th {
+        border-width: 1px;
+        padding: 2px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #dedede;
+    }
+    table.gridtable td {
+        border-width: 1px;
+        padding: 2px;
+		padding-left:10px;
+		text-align: center;
+		padding-right:10px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #ffffff;
+    }
+	.input {
+		width: 300px;
+	}
+	#msg {
+		color: red;
+	}
+	</style>
+  </head>
+  <body>
+   
+	查询服务器<input id="infosever" class="input" />
+	提交服务器<input id="submsever" class="input"/>
+	<button id="e2">保存配置</button>
+	<button id="ee">查询域名</button>  	 
+    <button id="e1">提交</button>
+	<span id="msg"></span>
+    <script src="devtools-panel.js"></script>
+  </body>
+</html>
