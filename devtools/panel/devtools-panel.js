@@ -1,103 +1,119 @@
+
 let infoseverInput = document.querySelector('#infosever');
 let submseverInput = document.querySelector('#submsever');
 let savebtn = document.querySelector('#e2');
 let submitbtn = document.querySelector('#e1');
 let msg = document.querySelector('#msg');
 
-let gettingAllStorageItems = browser.storage.local.get(null);
-gettingAllStorageItems.then((results) => {
-    	infoseverInput.value = results.infosever
-    	submseverInput.value = results.submsever
-})
+
+chrome.storage.sync.get("server",({ server })=> {
+	console.log("-----------");
+    infoseverInput.value = server.info;
+    submseverInput.value = server.subm;
+});
 
 savebtn.addEventListener('click', function() {
-	
-	browser.storage.local.set(
-	{ 
-		infosever: infoseverInput.value,
-		submsever: submseverInput.value
-		
-	});
+	console.log("-----------");
+	let server = {
+	  info: infoseverInput.value,
+	  subm: submseverInput.value
+	};
+	chrome.storage.sync.set({ server });
+	console.log('saved configuration');
 	
 });
 
 submitbtn.addEventListener('click', function() {
 	let cs = document.getElementsByClassName("check0");
 	let count = 0;
+	let err = false
 	for (i = 0; i < cs.length; i++) {
 		if (cs[i].checked) {
 			
-			let xhr = new XMLHttpRequest();
-			xhr.open("GET", submsever.value + cs[i].value, false);
-			xhr.onerror = function(v) {
-				showMsg("提交错误")
+			try {
+				let xhr = new XMLHttpRequest();
+				xhr.open("GET", submsever.value + cs[i].value, false);
+				xhr.onerror = function(v) {
+					showMsg("提交错误")
+				}
+				xhr.send()
+				
+				count++;
+			} catch {
+				err = true
+				
 			}
-			xhr.send()
-			
-			count++;
 		}
 		
 	}
-	showMsg("共提交" + count + "个域名");
+	if (err) {
+		showMsg("提交错误")
+	} else {
+		showMsg("共提交" + count + "个域名");
+	}
+	
 	
 });
 
 
 document.getElementById("ee").addEventListener("click", () => {
 
-	let tables = document.getElementsByTagName('table')
-	if (tables.length > 0) {
-		document.body.removeChild(tables[0])
-	}
-	
-	let getting = browser.devtools.network.getHAR()
-	let o = {}
-	getting.then((log)=>{
-		
-		log.entries.forEach(function(entry) {
-			let url = entry.request.url
-			let domain = ""
-			let idx1 = url.indexOf('//')
-			if (idx1 == -1) {
-				return
-			}
-			let idx2 = url.indexOf('/', idx1 + 2)
-			if (idx2 == -1) {
-				domain = url.substring(idx1 + 2, url.length)
-			} else {
-				domain = url.substring(idx1 + 2, idx2)
-			}
-			var patt = /^\d+\.\d+\.\d+\.\d+$/;
-			if (!patt.test(domain)) {
-				o[domain] = ""
-			}
-		})
-		
-	}).then(()=>{
-		let xhr = new XMLHttpRequest();
-		xhr.open("POST", infosever.value, true);
-		let jsonstr = JSON.stringify(Object.keys(o))
-		
-		xhr.onerror = function(v) {
-				showMsg("查询出差")
-			}
-		xhr.send(jsonstr)
-		xhr.onload = function () {
-			if (xhr.readyState === xhr.DONE) {
-				if (xhr.status === 200) {
-					
-					let res = JSON.parse(xhr.responseText)
-		
-					addTable(res)
-					showMsg("共有" + Object.keys(o).length + "个域名")
-				}
-			}
+		let tables = document.getElementsByTagName('table')
+		if (tables.length > 0) {
+			document.body.removeChild(tables[0])
 		}
 		
-	});
-	
-});
-
+		chrome.devtools.network.getHAR(function(log) {
+			let o = {}
+			log.entries.forEach(function(entry) {
+				let url = entry.request.url
+				let domain = ""
+				let idx1 = url.indexOf('//')
+				if (idx1 == -1) {
+					return
+				}
+				let idx2 = url.indexOf('/', idx1 + 2)
+				if (idx2 == -1) {
+					domain = url.substring(idx1 + 2, url.length)
+				} else {
+					domain = url.substring(idx1 + 2, idx2)
+				}
+				var patt = /^\d+\.\d+\.\d+\.\d+$/;
+				if (!patt.test(domain)) {
+					o[domain] = ""
+				}
+			})
+			
+			try {
+				let xhr = new XMLHttpRequest();
+				xhr.open("POST", infosever.value, true);
+				let jsonstr = JSON.stringify(Object.keys(o))
+				
+				xhr.onerror = function(v) {
+						showMsg("查询出差")
+					}
+				xhr.send(jsonstr)
+				xhr.onload = function () {
+					if (xhr.readyState === xhr.DONE) {
+						if (xhr.status === 200) {
+							
+							let res = JSON.parse(xhr.responseText)
+				
+							console.log(res)
+							addTable(res)
+							showMsg("共有" + Object.keys(o).length + "个域名")
+						}
+					}
+				}
+			}
+			catch( err) {
+				showMsg("提交错误")
+			}
+			
+		})
+		
+	}	
+)
 function addTable(obj) {
 	let table = document.createElement("table");
 	table.setAttribute('class', 'gridtable')

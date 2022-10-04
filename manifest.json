@@ -1,6 +1,6 @@
 {
   "description": "Search domain informations from devtools-panels and submit picked domains to a server",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "domain-info-devtools-panels",
   "version": "1.0",
   "author": "tanmingxin",
@@ -10,14 +10,14 @@
   },
   
   "background": {
-    "scripts": ["background_scripts/background.js"]
+    "service_worker": "background_scripts/background.js"
   },
   
   "permissions": [
-      "<all_urls>",
-	  "storage"
+	  "storage", "activeTab", "scripting"
   ],
-  
+  "host_permissions": [
+		"*://*/"
+	  ],
   "devtools_page": "devtools/devtools-page.html"
-
 }
