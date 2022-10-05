@@ -78,6 +78,12 @@ document.getElementById("ee").addEventListener("click", () => {
 				} else {
 					domain = url.substring(idx1 + 2, idx2)
 				}
+				
+				let idx1 = domain.indexOf(':')
+				if (idx1 != -1) {
+					domain = domain.substring(0, idx1)
+				}
+				
 				var patt = /^\d+\.\d+\.\d+\.\d+$/;
 				var patt2 = /\S+\.\S+/;
 				if (!patt.test(domain) && patt2.test(domain)) {
