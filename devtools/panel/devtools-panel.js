@@ -79,7 +79,7 @@ document.getElementById("ee").addEventListener("click", () => {
 					domain = url.substring(idx1 + 2, idx2)
 				}
 				
-				let idx1 = domain.indexOf(':')
+			    idx1 = domain.indexOf(':')
 				if (idx1 != -1) {
 					domain = domain.substring(0, idx1)
 				}
