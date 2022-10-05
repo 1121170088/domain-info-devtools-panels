@@ -79,7 +79,8 @@ document.getElementById("ee").addEventListener("click", () => {
 					domain = url.substring(idx1 + 2, idx2)
 				}
 				var patt = /^\d+\.\d+\.\d+\.\d+$/;
-				if (!patt.test(domain)) {
+				var patt2 = /\S+\.\S+/;
+				if (!patt.test(domain) && patt2.test(domain)) {
 					o[domain] = ""
 				}
 			})
